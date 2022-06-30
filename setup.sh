@@ -1,10 +1,18 @@
 #!/bin/bash
 
-PACKAGES="openssh"
-
 install_pkgs() {
-    echo "Installing Packages ...."
-    pacman -S $PACKAGES
+    printf "WARNING: $3 package will be installed. Continue (y/N): "
+    read answer
+    
+    if [ "$answer" == "y" ] ; then 
+        echo "Installing Packages...."
+        # $1 = Package Manager
+        # $2 = Install Cmd
+        # $3 = Package
+        $@
+    else
+	./lsct
+    fi
 }
 
 backup_config() {
@@ -77,7 +85,7 @@ start_service() {
 }
 
 main() {
-    install_pkgs
+    install_pkgs $@
     backup_config
     copy_config
     gen_new_keys
@@ -85,5 +93,5 @@ main() {
     start_service
 }
 
-main
+main $@
 
