@@ -1,5 +1,10 @@
 #!/bin/bash
 
+SSH_PATH=/etc/ssh
+SSH_CFG=/etc/ssh/ssh_config
+SSHD_CFG=/etc/ssh/sshd_config
+MODULI=/etc/ssh/moduli
+
 install_pkgs() {
     printf "WARNING: $3 package will be installed. Continue (y/N): "
     read answer
@@ -17,33 +22,32 @@ install_pkgs() {
 
 backup_config() {
     echo "Backing up config files..."
-    mv /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-    mv /etc/ssh/ssh_config /etc/ssh/ssh_config.bak
-    mv /etc/ssh/modlui /etc/ssh/moduli.bak
+    mv $SSHD_CFG $SSHD_CFG.bak
+    mv $SSH_CFG $SSH_CFG.bak
+    mv $MODULI $MODULI.bak
 }
 
 copy_config() {
     echo "Copying config files to /etc/ssh/..."
     if [ "./sshd_config" ] ; then
-        mv ./sshd_config /etc/ssh/
-        chown root:root /etc/ssh/sshd_config
+        mv ./sshd_config $SSH_PATH
+        chown root:root $SSHD_CFG
     fi
     
     if [ "./ssh_config" ] ; then
-        mv ./ssh_config /etc/ssh/
-        chown root:root /etc/ssh/ssh_config
+        mv ./ssh_config $SSH_PATH
+        chown root:root $SSH_CFG
     fi
     
     if [ "./moduli" ] ; then
         mv ./moduli /etc/ssh/
-        chown root:root /etc/ssh/moduli
+        chown root:root $MODULI
     fi
 }
 
 gen_new_keys() {
     echo "Removing default server keys..."
-    cd /etc/ssh
-    rm ssh_host_*key*
+    rm $SSH_PATH/ssh_host_*key*
 
     echo "Generating new server keys..."
     ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N "" < /dev/null
@@ -81,7 +85,9 @@ start_service() {
     systemctl start sshd.service
     systemctl status sshd.service
     
-    echo "SSH Init Completed Successfully"
+    echo "SSH Setup Completed Successfully"
+    echo "Press any key to continue"
+    read
 }
 
 main() {
