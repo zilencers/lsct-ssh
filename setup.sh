@@ -1,5 +1,6 @@
 #!/bin/bash
 
+ABS_PATH=$(pwd)/packages/lsct-ssh
 SSH_PATH=/etc/ssh
 SSH_CFG=/etc/ssh/ssh_config
 SSHD_CFG=/etc/ssh/sshd_config
@@ -29,18 +30,18 @@ backup_config() {
 
 copy_config() {
     echo "Copying config files to /etc/ssh/..."
-    if [ "./sshd_config" ] ; then
-        mv ./sshd_config $SSH_PATH
+    if [ "$ABS_PATH/sshd_config" ] ; then
+        mv $ABS_PATH/sshd_config $SSH_PATH
         chown root:root $SSHD_CFG
     fi
     
-    if [ "./ssh_config" ] ; then
-        mv ./ssh_config $SSH_PATH
+    if [ "$ABS_PATH/ssh_config" ] ; then
+        mv $ABS_PATH/ssh_config $SSH_PATH
         chown root:root $SSH_CFG
     fi
     
-    if [ "./moduli" ] ; then
-        mv ./moduli /etc/ssh/
+    if [ "$ABS_PATH/moduli" ] ; then
+        mv $ABS_PATH/moduli /etc/ssh/
         chown root:root $MODULI
     fi
 }
@@ -80,9 +81,11 @@ create_group() {
 start_service() {
     echo "Enabling service at startup..."
     systemctl enable sshd.service
+    sleep 3
 
     echo "Starting service..."
     systemctl start sshd.service
+    sleep 2
     systemctl status sshd.service
     
     echo "SSH Setup Completed Successfully"
