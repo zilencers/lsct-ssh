@@ -23,8 +23,9 @@ install_pkgs() {
 
 copy_keys() {
     systemctl start sshd.service
-    local ip=$(ip addr | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}/24\b")
+    local ip=$(ip addr | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b")
 
+    echo ""
     echo "WARNING: This configuration will disable password authentication."
     echo "It is recommended you copy your client public key to this server now."
     echo "Generate client keys using the following commands:"
